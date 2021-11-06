@@ -3,12 +3,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HeyUrlChallengeCodeDotnet.Data
 {
-    public class ApplicationContext : DbContext
-    {
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
-        {
-        }
+  public class ApplicationContext : DbContext
+  {
+    public DbSet<Url> Urls { get; set; }
+    public DbSet<VisitLog> VisitLogs { get; set; }
 
-        public DbSet<Url> Urls { get; set; }
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+    {
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<Url>()
+                  .HasMany<VisitLog>(g => g.VisitLogs)
+                  .WithOne(x => x.Url)
+                  .HasForeignKey(t => t.IdUrl);
+    }
+  }
 }
